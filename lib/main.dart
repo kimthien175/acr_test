@@ -1,6 +1,12 @@
+import 'package:acr_test/acr.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-void main() => runApp(const MyApp());
+void main() async {
+  await dotenv.load(fileName: '.env');
+  await Acr.getInstance().init().catchError((e) => print(e));
+  runApp(const MyApp());
+}
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
@@ -8,13 +14,25 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Material App',
       home: Scaffold(
         appBar: AppBar(
           title: const Text('Material App Bar'),
         ),
-        body: const Center(
-          child: Text('Hello World'),
+        body: Center(
+          child: Column(children: [
+            ElevatedButton(
+                onPressed: () {
+                  Acr.getInstance().start();
+                },
+                child: const Text('Start')),
+            ElevatedButton(
+                onPressed: () {
+                  Acr.getInstance().stop();
+                },
+                child: const Text('Stop'))
+          ]),
         ),
       ),
     );

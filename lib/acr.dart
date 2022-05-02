@@ -1,31 +1,41 @@
 import 'package:acr_cloud_sdk/acr_cloud_sdk.dart';
-import 'package:dotenv/dotenv.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class Acr {
   static final Acr _instance = Acr._internal();
   static Acr getInstance() => _instance;
-  Acr._internal() {
-    var env = DotEnv(includePlatformEnvironment: true)..load();
+  Acr._internal();
 
-    _acr = AcrCloudSdk()
+  Future<void> init() async {
+    _acr
       ..init(
-          host: env['acr_host'].toString(),
-          accessKey: env['acr_access_key'].toString(),
-          accessSecret: env['acr_access_secret'].toString())
+          host: dotenv.env['acr_host'].toString(),
+          accessKey: dotenv.env['acr_access_key'].toString(),
+          accessSecret: dotenv.env['acr_access_secret'].toString(),
+          setLog: false)
       ..songModelStream.listen(searchSong);
   }
 
   void searchSong(SongModel song) {
-    print(song);
+    print('searchSong');
+    print(song.toJson());
+    print('end searchSong');
   }
 
-  late final AcrCloudSdk _acr;
+  final AcrCloudSdk _acr = AcrCloudSdk();
 
-  Future<bool> start() async {
-    return _acr.start();
+  Future<void> start() async {
+    _acr.start().catchError((e) {
+      print('Acr Start');
+      print(e);
+
+      print('Acr Start -> Stop');
+    });
   }
 
-  Future<bool> stop() async {
-    return _acr.stop();
+  Future<void> stop() async {
+    _acr.stop().catchError((e) {
+      print(e);
+    });
   }
 }
