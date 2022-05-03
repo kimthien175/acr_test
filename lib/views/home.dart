@@ -1,3 +1,5 @@
+import 'package:acr_test/models/deezer_song.dart';
+import 'package:acr_test/views/song.dart';
 import 'package:avatar_glow/avatar_glow.dart';
 import 'package:flutter/material.dart';
 
@@ -16,9 +18,11 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
   void initState() {
     super.initState();
 
-    Controller.getInstance().home = () {
-      setState(() {});
-    };
+    Controller.getInstance().reloadHome = () => setState(() {});
+    Controller.getInstance().navigateTo = (DeezerSong song) => Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => SongScreen(song)),
+        );
 
     _breathingController = AnimationController(
         vsync: this, duration: const Duration(milliseconds: 2000));

@@ -25,7 +25,7 @@ class Acr {
   void searchSong(SongModel song) async {
     // set state
     _isRecognizing = false;
-    Controller.getInstance().home!();
+    Controller.getInstance().reloadHome!();
 
     var data = song.metadata;
     //print(data);
@@ -35,6 +35,7 @@ class Acr {
       if (id != '') {
         var result = await Networking.getInstance()
             .get(data.music![0].externalMetadata?.deezer?.track?.id ?? '');
+        Controller.getInstance().navigateTo!(result);
         //print(result.toJson());
         //showDeezerResult(result);
       } else {
@@ -47,7 +48,7 @@ class Acr {
 
   Future<void> start() async {
     _isRecognizing = true;
-    Controller.getInstance().home!();
+    Controller.getInstance().reloadHome!();
     _acr.start().catchError((e) {
       print(e);
     });
@@ -56,7 +57,7 @@ class Acr {
   Future<void> stop() async {
     _acr.stop().then((value) {
       _isRecognizing = false;
-      Controller.getInstance().home!();
+      Controller.getInstance().reloadHome!();
     }).catchError((e) {
       print(e);
     });
