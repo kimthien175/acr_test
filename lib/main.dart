@@ -15,13 +15,9 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Material App',
-      home: Scaffold(
-          // appBar: AppBar(
-          //   title: const Text('Material App Bar'),
-          // ),
-          body: Home()),
-    );
+        debugShowCheckedModeBanner: false,
+        title: 'Material App',
+        //home: SongScreen(DeezerSong(title: 'Ride'))
+        home: Home());
   }
 }
