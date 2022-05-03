@@ -1,6 +1,8 @@
 import 'package:acr_cloud_sdk/acr_cloud_sdk.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
+import 'networking.dart';
+
 class Acr {
   static final Acr _instance = Acr._internal();
   static Acr getInstance() => _instance;
@@ -16,20 +18,26 @@ class Acr {
       ..songModelStream.listen(searchSong);
   }
 
-  void searchSong(SongModel song) {
-    print('searchSong');
-    print(song.toJson());
-    print('end searchSong');
+  void searchSong(SongModel song) async {
+    var data = song.metadata;
+    if (data != null && data.music!.isNotEmpty) {
+      String id = data.music![0].externalMetadata?.deezer?.track?.id ?? '';
+      if (id != '') {
+        var result = await Networking.getInstance()
+            .get(data.music![0].externalMetadata?.deezer?.track?.id ?? '');
+
+        //showDeezerResult(result);
+      } else {
+        throw Exception('Null deezer id from acr!');
+      }
+    }
   }
 
   final AcrCloudSdk _acr = AcrCloudSdk();
 
   Future<void> start() async {
     _acr.start().catchError((e) {
-      print('Acr Start');
       print(e);
-
-      print('Acr Start -> Stop');
     });
   }
 
