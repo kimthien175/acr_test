@@ -3,22 +3,6 @@
     {
       "label": "Fueled By Ramen",
       "external_metadata": {
-        "spotify": {
-          "album": {
-            "name": "Fine Tune",
-            "id": null
-          },
-          "artists": [
-            {
-              "name": "Twenty One Pilots",
-              "id": null
-            }
-          ],
-          "track": {
-            "name": "Stressed Out",
-            "id": "5Qu9Kk4KQgY1ja3vSNToOb"
-          }
-        },
         "deezer": {
           "artists": [
             {

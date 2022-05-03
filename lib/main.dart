@@ -1,4 +1,5 @@
-import 'package:acr_test/acr.dart';
+import 'package:acr_test/services/acr.dart';
+import 'package:acr_test/views/home.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
@@ -13,28 +14,14 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Material App',
       home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Material App Bar'),
-        ),
-        body: Center(
-          child: Column(children: [
-            ElevatedButton(
-                onPressed: () {
-                  Acr.getInstance().start();
-                },
-                child: const Text('Start')),
-            ElevatedButton(
-                onPressed: () {
-                  Acr.getInstance().stop();
-                },
-                child: const Text('Stop'))
-          ]),
-        ),
-      ),
+          // appBar: AppBar(
+          //   title: const Text('Material App Bar'),
+          // ),
+          body: Home()),
     );
   }
 }

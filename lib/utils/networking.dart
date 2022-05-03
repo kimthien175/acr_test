@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
-import './models/deezer_song.dart';
+import '../models/deezer_song.dart';
 
 class Networking {
   static final Networking _instance = Networking._internal();
