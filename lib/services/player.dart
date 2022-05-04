@@ -1,5 +1,3 @@
-// //import 'package:audioplayers/audioplayers.dart';
-
 // // class Player {
 // //   static final Player _instance = Player._internal();
 // //   static Player getInstance() => _instance;
@@ -90,7 +88,6 @@
 //   static final Player _instance = Player._internal();
 //   static Player getInstance() => _instance;
 
-
 //   final Duration _position = Duration.zero;
 //   Duration get position => _position;
 
@@ -104,7 +101,7 @@
 
 //     _player.playerStateStream.listen((state) {
 //   switch (state.processingState) {
-//     case ProcessingState.idle: 
+//     case ProcessingState.idle:
 //     break;
 //     case ProcessingState.loading: ...
 //     case ProcessingState.buffering: ...
@@ -112,7 +109,6 @@
 //     case ProcessingState.completed: ...
 //   }
 // });
-
 
 //   }
 
@@ -154,3 +150,46 @@
 //     });
 //   }
 // }
+
+import 'package:just_audio/just_audio.dart';
+
+class Player {
+  static final Player _instance = Player._internal();
+  static Player getInstance() => _instance;
+  Player._internal() {
+    _buttonState = ButtonState.loading;
+    init();
+  }
+
+  late ButtonState _buttonState;
+
+  ButtonState get buttonState => _buttonState;
+
+  late AudioPlayer _player;
+
+  void init() async {
+    _player = AudioPlayer();
+  }
+
+  void dispose() async {
+    _player.dispose();
+  }
+
+  void setUrl(String url) async {
+    _player.setUrl(url);
+  }
+
+  void play() async {
+    _player.play();
+  }
+
+  void pause() async {
+    _player.pause();
+  }
+
+  void seek(Duration position) async {
+    _player.seek(position);
+  }
+}
+
+enum ButtonState { loading, paused, playing }
