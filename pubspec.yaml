@@ -39,6 +39,9 @@ dependencies:
   flutter_hooks: ^0.18.3
   http: ^0.13.4
   avatar_glow: ^2.0.2
+  # audioplayers: ^0.20.1
+  # audio_video_progress_bar: ^0.10.0
+  just_audio: ^0.9.20
 
 dev_dependencies:
   flutter_test:

@@ -1,4 +1,5 @@
 import 'package:acr_test/models/deezer_song.dart';
+import 'package:acr_test/views/player.dart';
 import 'package:flutter/material.dart';
 
 import '../utils/color.dart';
@@ -12,14 +13,15 @@ class SongScreen extends StatefulWidget {
 }
 
 class _SongScreenState extends State<SongScreen> {
-  final int _present = 0;
-  int _duration = 0;
-  bool _isPlaying = false;
+  @override
+  void initState() {
+    super.initState();
+    //Player.getInstance().setUrl(widget.song.preview.toString());
+  }
+
   String _contributers = '_contributer';
   @override
   Widget build(BuildContext context) {
-    _duration = widget.song.duration as int;
-
     // convert contributers to string
     var contributers = widget.song.contributors;
     if (contributers!.isNotEmpty) {
@@ -58,6 +60,8 @@ class _SongScreenState extends State<SongScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 const SizedBox(height: 10),
+
+                // Track cover
                 ClipRRect(
                   borderRadius: BorderRadius.circular(25),
                   child: (widget.song.album!.coverMedium != null)
@@ -86,10 +90,12 @@ class _SongScreenState extends State<SongScreen> {
                           ),
                         ),
                 ),
+
+                // Track name, artists and duration
                 Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(widget.song.title! ?? 'Track name',
+                    Text(widget.song.title!,
                         style: const TextStyle(
                             color: Colors.white,
                             fontSize: 25,
@@ -101,84 +107,21 @@ class _SongScreenState extends State<SongScreen> {
                       _contributers,
                       style: const TextStyle(
                           fontSize: 18,
-                          color: Colors.white70,
+                          color: Colors.white,
                           fontWeight: FontWeight.w500),
                     ),
+                    const SizedBox(height: 12),
+                    Text(
+                        'Duration: ${_secToMinFullDuration(widget.song.duration!.toInt())}',
+                        style: const TextStyle(
+                            color: Colors.white70,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500))
                   ],
                 ),
 
                 // Play section
-                Container(
-                    height: 240,
-                    decoration: const BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadiusDirectional.only(
-                          topStart: Radius.circular(30),
-                          topEnd: Radius.circular(30)),
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        const SizedBox(height: 30),
-                        // Progress bar and Play time
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            // Progress bar
-                            Container(
-                              height: 5,
-                              width: _scrWidth * 0.8,
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(20),
-                                  color: Colors.black),
-                            ),
-                            const SizedBox(height: 15),
-
-                            // Play time
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                SizedBox(
-                                  width: _scrWidth * 0.2,
-                                  child: Center(
-                                      child: Text(_secToMin(_present),
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors.grey.shade700))),
-                                ),
-                                SizedBox(
-                                    width: _scrWidth * 0.2,
-                                    child: Center(
-                                        child: Text(_secToMin(_duration),
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                color: Colors.grey.shade700))))
-                              ],
-                            ),
-                          ],
-                        ),
-                        // Play button
-                        Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              IconButton(
-                                  onPressed: () {
-                                    setState(() {
-                                      _isPlaying = !_isPlaying;
-                                    });
-                                  },
-                                  icon: Icon(
-                                      _isPlaying
-                                          ? Icons.pause_circle_filled_rounded
-                                          : Icons.play_circle_filled_rounded,
-                                      color: mainBlue,
-                                      size: 75)),
-                              const SizedBox(width: 45)
-                            ]),
-                        const SizedBox(height: 50)
-                      ],
-                    ))
+                PlayerSection(widget.song.preview.toString())
               ],
             ),
           ),
@@ -186,8 +129,8 @@ class _SongScreenState extends State<SongScreen> {
   }
 }
 
-String _secToMin(int sec) {
+String _secToMinFullDuration(int sec) {
   var _min = sec ~/ 60;
   var _sec = sec % 60;
-  return '${_min < 10 ? '0' + _min.toString() : _min}:${_sec < 10 ? '0' + _sec.toString() : _sec}';
+  return '${_min}m ${_sec}s';
 }

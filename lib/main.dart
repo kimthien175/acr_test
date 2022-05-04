@@ -1,5 +1,5 @@
 import 'package:acr_test/services/acr.dart';
-import 'package:acr_test/views/home.dart';
+import 'package:acr_test/test.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
@@ -15,9 +15,6 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: 'Material App',
-        //home: SongScreen(DeezerSong(title: 'Ride'))
-        home: Home());
+        debugShowCheckedModeBanner: false, title: 'Material App', home: Test());
   }
 }
