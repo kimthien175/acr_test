@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 
+import '../services/player.dart';
 import '../utils/color.dart';
 
 class PlayerSection extends StatefulWidget {
@@ -12,49 +13,80 @@ class PlayerSection extends StatefulWidget {
 }
 
 class _PlayerSectionState extends State<PlayerSection> {
-  late AudioPlayer player;
   Duration duration = Duration.zero;
   Duration position = Duration.zero;
-  ButtonState btnState = ButtonState.loading;
+  ButtonState btnState = ButtonState.paused;
   bool isPlaying = false;
+
   @override
   void initState() {
     super.initState();
-    init();
-    // Player.getInstance().notify = () => setState(() {});
-    // Player.getInstance().play(widget.url);
-  }
 
-  void init() async {
-    player = AudioPlayer();
+    Player.getInstance().notify = (ButtonState _btnState) => setState(() {
+          btnState = _btnState;
+        });
 
-    player.playerStateStream.listen((event) {
-      var processingState = event.processingState;
-      if (processingState == ProcessingState.loading ||
-          processingState == ProcessingState.buffering) {
-        btnState = ButtonState.loading;
-        print('loading');
-        setState(() {});
-        return;
-      }
-
-      var isPlaying = event.playing;
-      btnState = isPlaying ? ButtonState.playing : ButtonState.paused;
-      print(isPlaying ? 'playing' : 'paused');
-      setState(() {});
-    });
-
-    player.setUrl(widget.url).then((value) {
+    // set url
+    Player.getInstance().setUrl(widget.url).then((value) {
       setState(() {
-        duration = value!;
+        duration = value;
       });
+    }).catchError((e) {
+      print('E: setUrl ' + e.toString());
     });
   }
 
-  @override
-  void dispose() {
-    player.dispose();
-    super.dispose();
+  Widget _playerButton(PlayerState? playerState) {
+    var _audioPlayer = Player.getInstance();
+    // 1
+    final processingState = playerState?.processingState;
+    if (processingState == ProcessingState.loading ||
+        processingState == ProcessingState.buffering) {
+      // loading
+      // 2
+      return Container(
+        margin: const EdgeInsets.all(8.0),
+        width: 32.0,
+        height: 32.0,
+        child: const CircularProgressIndicator(),
+      );
+    } else if (Player.getInstance().playerState.playing != true) {
+      // 3
+      return Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            IconButton(
+                onPressed: Player.getInstance().play,
+                icon: const Icon(Icons.play_circle_filled_rounded,
+                    color: mainBlue, size: 76)),
+            const SizedBox(width: 45)
+          ]);
+    } else if (processingState != ProcessingState.completed) {
+      // 4
+      return Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            IconButton(
+                onPressed: Player.getInstance().pause,
+                icon: const Icon(Icons.pause_circle_filled_rounded,
+                    color: mainBlue, size: 76)),
+            const SizedBox(width: 45)
+          ]);
+    } else {
+      // 5
+      return Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            IconButton(
+                onPressed: Player.getInstance().replay,
+                icon: const Icon(Icons.replay_circle_filled_rounded,
+                    color: mainBlue, size: 76)),
+            const SizedBox(width: 45)
+          ]);
+    }
   }
 
   @override
@@ -80,9 +112,7 @@ class _PlayerSectionState extends State<PlayerSection> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               IconButton(
-                  onPressed: () {
-                    player.pause();
-                  },
+                  onPressed: Player.getInstance().pause,
                   icon: const Icon(Icons.pause_circle_filled_rounded,
                       color: mainBlue, size: 76)),
               const SizedBox(width: 45)
@@ -94,10 +124,20 @@ class _PlayerSectionState extends State<PlayerSection> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               IconButton(
-                  onPressed: () {
-                    player.play();
-                  },
+                  onPressed: Player.getInstance().play,
                   icon: const Icon(Icons.play_circle_filled_rounded,
+                      color: mainBlue, size: 76)),
+              const SizedBox(width: 45)
+            ]);
+        break;
+      case ButtonState.replay:
+        playBtn = Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              IconButton(
+                  onPressed: Player.getInstance().replay,
+                  icon: const Icon(Icons.replay_circle_filled_rounded,
                       color: mainBlue, size: 76)),
               const SizedBox(width: 45)
             ]);
@@ -129,18 +169,17 @@ class _PlayerSectionState extends State<PlayerSection> {
               children: [
                 Padding(
                   child: Slider(
-                    value: (_duration != 0 ? _position / _duration : 0),
-                    label: _secToMin(_position.toInt()),
+                    value: ((_duration != 0) ? (_position / _duration) : 0)
+                        .toDouble(),
+                    label: _secToMin(_position),
                     onChanged: (newRating) {
-                      //setState(() {});
+                      setState(() {
+                        position = Duration(
+                            seconds: (newRating * duration.inSeconds).toInt());
+                      });
                     },
                     onChangeEnd: (newRating) {
-                      player
-                          .seek(Duration(
-                              seconds: (newRating * _duration).toInt()))
-                          .then((value) {
-                        setState(() {});
-                      });
+                      // player seek
                     },
                   ),
                   padding: EdgeInsets.symmetric(horizontal: _scrWidth * 0.035),
@@ -153,7 +192,7 @@ class _PlayerSectionState extends State<PlayerSection> {
                     SizedBox(
                       width: _scrWidth * 0.2,
                       child: Center(
-                          child: Text(_secToMin(_position.toInt()),
+                          child: Text(_secToMin(_position),
                               style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   color: Colors.grey.shade700))),
@@ -161,25 +200,24 @@ class _PlayerSectionState extends State<PlayerSection> {
                     SizedBox(
                         width: _scrWidth * 0.2,
                         child: Center(
-                            child: Text(_secToMin(_duration.toInt()),
+                            child: Text(_secToMin(_duration),
                                 style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     color: Colors.grey.shade700))))
                   ],
                 ),
 
-                Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      IconButton(
-                          onPressed: () {
-                            player.play();                                                                                                                                                                                                                                                                                                                        
-                          },
-                          icon: const Icon(Icons.play_circle_filled_rounded,
-                              color: mainBlue, size: 76)),
-                      const SizedBox(width: 45)
-                    ]),
+                playBtn,
+                StreamBuilder<PlayerState>(
+                  stream: Player.getInstance().playerStateStream,
+                  builder: (context, snapshot) {
+                    final playerState = snapshot.data;
+                    if (playerState == null) return const Text('null');
+                    return Text(playerState.playing
+                        ? 'playing '
+                        : 'not playing ' + playerState.processingState.name);
+                  },
+                ),
                 const SizedBox(height: 15),
               ],
             ),
@@ -194,5 +232,3 @@ String _secToMin(int sec) {
   var _sec = sec % 60;
   return '${_min < 10 ? '0' + _min.toString() : _min}:${_sec < 10 ? '0' + _sec.toString() : _sec}';
 }
-
-enum ButtonState { loading, playing, paused }

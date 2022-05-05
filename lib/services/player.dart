@@ -157,39 +157,80 @@ class Player {
   static final Player _instance = Player._internal();
   static Player getInstance() => _instance;
   Player._internal() {
-    _buttonState = ButtonState.loading;
+    //_buttonState = ButtonState.loading;
     init();
   }
 
-  late ButtonState _buttonState;
+  // late ButtonState _buttonState;
 
-  ButtonState get buttonState => _buttonState;
+  // ButtonState get buttonState => _buttonState;
+
+  Stream<PlayerState> get playerStateStream => _player.playerStateStream;
+  PlayerState get playerState => _player.playerState;
+
+  Function? notify;
 
   late AudioPlayer _player;
 
   void init() async {
     _player = AudioPlayer();
+
+    _player.playerStateStream.listen((state) {
+      // print(state.playing
+      //     ? 'playing '
+      //     : 'not playing ' + state.processingState.toString());
+
+      // if (!state.playing) {
+      //   if (state.processingState != ProcessingState.ready) {
+      //     notify!(ButtonState.loading);
+      //     return;
+      //   }
+      //   notify!(ButtonState.paused);
+      //   return;
+      // }
+
+      // if (state.processingState == ProcessingState.completed) {
+      //   notify!(ButtonState.replay);
+      //   return;
+      // }
+
+      // if (state.processingState != ProcessingState.ready) {
+      //   notify!(ButtonState.loading);
+      //   return;
+      // }
+
+      // // if processingState == buffering || loadings
+      // notify!(ButtonState.playing);
+      // return;
+    });
   }
 
   void dispose() async {
     _player.dispose();
   }
 
-  void setUrl(String url) async {
-    _player.setUrl(url);
+  // return duration to PlayerSection
+  Future<Duration> setUrl(String url) async {
+    var duration = await _player.setUrl(url);
+    if (duration != null) return duration;
+    throw Exception('Result from Player::setUrl is NULL !!');
   }
 
-  void play() async {
-    _player.play();
+  Future<void> play() async {
+    return await _player.play();
   }
 
-  void pause() async {
-    _player.pause();
+  Future<void> pause() async {
+    return await _player.pause();
   }
 
-  void seek(Duration position) async {
-    _player.seek(position);
+  Future<void> seek(Duration position) async {
+    return await _player.seek(position);
+  }
+
+  Future<void> replay() async {
+    return await _player.seek(Duration.zero);
   }
 }
 
-enum ButtonState { loading, paused, playing }
+enum ButtonState { loading, paused, playing, replay }
