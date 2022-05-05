@@ -164,12 +164,10 @@ class _PlayerSectionState extends State<PlayerSection> {
                 //   ],
                 // ),
 
-                const _PlayButton(),
-
                 //const SizedBox(height: 15),
               ],
             ),
-            const SizedBox(height: 60)
+            const _PlayButton(),
           ],
         ));
   }
@@ -222,61 +220,53 @@ class _PlayButton extends StatelessWidget {
       builder: (context, snapshot) {
         var playerState = snapshot.data;
         if (playerState == null) {
-          return Container(
-            margin: const EdgeInsets.all(8.0),
-            width: 32.0,
-            height: 32.0,
-            child: const CircularProgressIndicator(),
+          return const SizedBox(
+            width: 76.0,
+            height: 76.0,
+            child: CircularProgressIndicator(),
           );
         }
 
         if (playerState.processingState == ProcessingState.ready) {
           // Playing state, press to pause
           if (playerState.playing) {
-            return Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  IconButton(
-                      onPressed: Player.getInstance().pause,
-                      icon: const Icon(Icons.pause_circle_filled_rounded,
-                          color: mainBlue, size: 76)),
-                  const SizedBox(width: 45)
-                ]);
+            return SizedBox(
+                width: 76,
+                height: 76,
+                child: IconButton(
+                    padding: const EdgeInsets.all(0),
+                    onPressed: Player.getInstance().pause,
+                    icon: const Icon(Icons.pause_circle_filled_rounded,
+                        color: mainBlue, size: 76)));
           }
 
           // Pausing state, press to play
-          return Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                IconButton(
-                    onPressed: Player.getInstance().play,
-                    icon: const Icon(Icons.play_circle_filled_rounded,
-                        color: mainBlue, size: 76)),
-                const SizedBox(width: 45)
-              ]);
+          return SizedBox(
+              width: 76,
+              height: 76,
+              child: IconButton(
+                  padding: const EdgeInsets.all(0),
+                  onPressed: Player.getInstance().play,
+                  icon: const Icon(Icons.play_circle_filled_rounded,
+                      color: mainBlue, size: 76)));
         }
 
         if (playerState.playing &&
             playerState.processingState == ProcessingState.completed) {
-          return Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                IconButton(
-                    onPressed: Player.getInstance().replay,
-                    icon: const Icon(Icons.replay_circle_filled_rounded,
-                        color: mainBlue, size: 76)),
-                const SizedBox(width: 45)
-              ]);
+          return SizedBox(
+              width: 76,
+              height: 76,
+              child: IconButton(
+                  padding: const EdgeInsets.all(0),
+                  onPressed: Player.getInstance().replay,
+                  icon: const Icon(Icons.replay_circle_filled_rounded,
+                      color: mainBlue, size: 76)));
         }
 
-        return Container(
-          margin: const EdgeInsets.all(8.0),
-          width: 32.0,
-          height: 32.0,
-          child: const CircularProgressIndicator(),
+        return const SizedBox(
+          width: 76.0,
+          height: 76.0,
+          child: CircularProgressIndicator(),
         );
       },
     );
