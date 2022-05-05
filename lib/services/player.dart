@@ -157,52 +157,16 @@ class Player {
   static final Player _instance = Player._internal();
   static Player getInstance() => _instance;
   Player._internal() {
-    //_buttonState = ButtonState.loading;
     init();
   }
 
-  // late ButtonState _buttonState;
-
-  // ButtonState get buttonState => _buttonState;
-
   Stream<PlayerState> get playerStateStream => _player.playerStateStream;
   PlayerState get playerState => _player.playerState;
-
-  Function? notify;
 
   late AudioPlayer _player;
 
   void init() async {
     _player = AudioPlayer();
-
-    _player.playerStateStream.listen((state) {
-      // print(state.playing
-      //     ? 'playing '
-      //     : 'not playing ' + state.processingState.toString());
-
-      // if (!state.playing) {
-      //   if (state.processingState != ProcessingState.ready) {
-      //     notify!(ButtonState.loading);
-      //     return;
-      //   }
-      //   notify!(ButtonState.paused);
-      //   return;
-      // }
-
-      // if (state.processingState == ProcessingState.completed) {
-      //   notify!(ButtonState.replay);
-      //   return;
-      // }
-
-      // if (state.processingState != ProcessingState.ready) {
-      //   notify!(ButtonState.loading);
-      //   return;
-      // }
-
-      // // if processingState == buffering || loadings
-      // notify!(ButtonState.playing);
-      // return;
-    });
   }
 
   void dispose() async {
@@ -216,21 +180,21 @@ class Player {
     throw Exception('Result from Player::setUrl is NULL !!');
   }
 
-  Future<void> play() async {
-    return await _player.play();
+  void play() {
+    _player.play();
   }
 
-  Future<void> pause() async {
-    return await _player.pause();
+  void pause() {
+    _player.pause();
   }
 
-  Future<void> seek(Duration position) async {
-    return await _player.seek(position);
+  void seek(Duration position) {
+    _player.seek(position);
   }
 
-  Future<void> replay() async {
-    return await _player.seek(Duration.zero);
+  void replay() {
+    _player.seek(Duration.zero);
   }
 }
 
-enum ButtonState { loading, paused, playing, replay }
+//enum ButtonState { loading, paused, playing, replay }
