@@ -163,7 +163,9 @@ class Player {
   Stream<PlayerState> get playerStateStream => _player.playerStateStream;
   PlayerState get playerState => _player.playerState;
   Stream<Duration> get positionStream => _player.positionStream;
-  Duration get position => _player.position;
+  Stream<Duration> get bufferedPositionStream => _player.bufferedPositionStream;
+  //Duration get position => _player.position;
+
   late AudioPlayer _player;
 
   void init() async {

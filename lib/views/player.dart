@@ -59,13 +59,42 @@ class _PlayerSectionState extends State<PlayerSection> {
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                // Container(
+                //     decoration: BoxDecoration(color: Colors.amber),
+                //     height: 64,
+                //     child:
                 _ProgressBar(duration),
+                //   ),
                 const _PlayButton(),
               ],
             ),
             const SizedBox(height: 5)
           ],
         ));
+  }
+}
+
+class _BufferBar extends StatelessWidget {
+  const _BufferBar(this.duration, {Key? key}) : super(key: key);
+  final Duration duration;
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<Duration>(
+        stream: Player.getInstance().bufferedPositionStream,
+        builder: (context, snapshot) {
+          var _scrWidth = MediaQuery.of(context).size.width;
+          return Padding(
+            padding: EdgeInsets.symmetric(horizontal: _scrWidth * 0.1),
+            child: LinearProgressIndicator(
+              color: Theme.of(context).colorScheme.background,
+              backgroundColor: Theme.of(context).colorScheme.surface,
+              value: (snapshot.hasData ? snapshot.data! : Duration.zero)
+                      .inMilliseconds /
+                  duration.inMilliseconds,
+              //semanticsLabel: 'Linear progress indicator',
+            ),
+          );
+        });
   }
 }
 
@@ -161,32 +190,38 @@ class __ProgressBarState extends State<_ProgressBar> {
           if (sliderValue > 1) sliderValue = 1;
           return Column(
             children: [
-              Padding(
-                child: Slider(
-                  value: sliderValue,
-                  label: _secToMin(position),
-                  onChanged: (newRating) {
-                    setState(() {
-                      position = Duration(
-                          milliseconds:
-                              (newRating * _duration.inMilliseconds).toInt());
-                    });
-                  },
-                  onChangeStart: (double startValue) {
-                    isDragging = true;
-                    //isDragging = true;
-                  },
-                  onChangeEnd: (newRating) {
-                    isDragging = false;
+              Stack(alignment: AlignmentDirectional.center, children: [
+                // Buffer
+                _BufferBar(_duration),
 
-                    // // player seek
-                    Player.getInstance().seek(Duration(
-                        milliseconds:
-                            (newRating * _duration.inMilliseconds).toInt()));
-                  },
+                // Indicator
+                Padding(
+                  child: Slider(
+                    value: sliderValue,
+                    label: _secToMin(position),
+                    onChanged: (newRating) {
+                      setState(() {
+                        position = Duration(
+                            milliseconds:
+                                (newRating * _duration.inMilliseconds).toInt());
+                      });
+                    },
+                    onChangeStart: (double startValue) {
+                      isDragging = true;
+                      //isDragging = true;
+                    },
+                    onChangeEnd: (newRating) {
+                      isDragging = false;
+
+                      // // player seek
+                      Player.getInstance().seek(Duration(
+                          milliseconds:
+                              (newRating * _duration.inMilliseconds).toInt()));
+                    },
+                  ),
+                  padding: EdgeInsets.symmetric(horizontal: _scrWidth * 0.04),
                 ),
-                padding: EdgeInsets.symmetric(horizontal: _scrWidth * 0.04),
-              ),
+              ]),
 
               // Play time and PlayButton
               Row(
