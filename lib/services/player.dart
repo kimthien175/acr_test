@@ -162,8 +162,8 @@ class Player {
 
   Stream<PlayerState> get playerStateStream => _player.playerStateStream;
   PlayerState get playerState => _player.playerState;
-  dynamic get current => _player.position;
-
+  Stream<Duration> get positionStream => _player.positionStream;
+  Duration get position => _player.position;
   late AudioPlayer _player;
 
   void init() async {

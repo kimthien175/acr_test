@@ -13,10 +13,8 @@ class PlayerSection extends StatefulWidget {
 }
 
 class _PlayerSectionState extends State<PlayerSection> {
-  Duration duration = Duration.zero;
-  Duration position = Duration.zero;
-
-  final stopwatch = Stopwatch();
+  Duration duration = const Duration(seconds: 1);
+  //Duration position = Duration.zero;
 
   @override
   void initState() {
@@ -38,10 +36,6 @@ class _PlayerSectionState extends State<PlayerSection> {
 
   @override
   Widget build(BuildContext context) {
-    var _duration = duration.inSeconds;
-    var _position = position.inSeconds;
-    var _scrWidth = MediaQuery.of(context).size.width;
-
     return Container(
         height: 200,
         decoration: const BoxDecoration(
@@ -65,56 +59,159 @@ class _PlayerSectionState extends State<PlayerSection> {
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Padding(
-                  child: Slider(
-                    value: ((_duration != 0) ? (_position / _duration) : 0)
-                        .toDouble(),
-                    label: _secToMin(_position),
-                    onChanged: (newRating) {
-                      setState(() {
-                        position = Duration(
-                            milliseconds:
-                                (newRating * duration.inSeconds * 1000)
-                                    .toInt());
-                      });
-                    },
-                    onChangeEnd: (newRating) {
-                      // player seek
-                      Player.getInstance().seek(Duration(
-                          milliseconds:
-                              (newRating * duration.inSeconds * 1000).toInt()));
-                    },
-                  ),
-                  padding: EdgeInsets.symmetric(horizontal: _scrWidth * 0.04),
-                ),
-
-                // Play time and PlayButton
-                Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(
-                        width: _scrWidth * 0.2,
-                        child: Center(
-                            child: Text(_secToMin(_position),
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.grey.shade700))),
-                      ),
-                      const _PlayButton(),
-                      SizedBox(
-                          width: _scrWidth * 0.2,
-                          child: Center(
-                              child: Text(_secToMin(_duration),
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.grey.shade700))))
-                    ])
+                _ProgressBar(duration),
+                const _PlayButton(),
               ],
             ),
             const SizedBox(height: 5)
           ],
         ));
+  }
+}
+
+class _ProgressBar extends StatefulWidget {
+  const _ProgressBar(this.duration, {Key? key}) : super(key: key);
+  final Duration duration;
+  @override
+  State<_ProgressBar> createState() => __ProgressBarState();
+}
+
+class __ProgressBarState extends State<_ProgressBar> {
+  Duration position = Duration.zero;
+  bool isDragging = false;
+  @override
+  Widget build(BuildContext context) {
+    // var _scrWidth = MediaQuery.of(context).size.width;
+    // Duration _position = position;
+    // var _duration = widget.duration != Duration.zero
+    //     ? widget.duration
+    //     : const Duration(seconds: 1);
+    // return Column(
+    //   children: [
+    //     Padding(
+    //       child: Slider(
+    //         value: _position.inMilliseconds / _duration.inMilliseconds,
+    //         label: _secToMin(_position),
+    //         onChanged: (newRating) {
+    //           print('onChange');
+    //           setState(() {
+    //             position = Duration(
+    //                 milliseconds:
+    //                     (newRating * _duration.inMilliseconds).toInt());
+    //           });
+    //         },
+    //         onChangeStart: (double startValue) {
+    //           print('onChangeStart');
+    //           //isDragging = true;
+    //         },
+    //         onChangeEnd: (newRating) {
+    //           print('onChangeEnd');
+    //           // isDragging = false;
+    //           // // player seek
+    //           // Player.getInstance().seek(Duration(
+    //           //     milliseconds:
+    //           //         (newRating * _duration.inMilliseconds).toInt()));
+    //         },
+    //       ),
+    //       padding: EdgeInsets.symmetric(horizontal: _scrWidth * 0.04),
+    //     ),
+
+    //     // Play time and PlayButton
+    //     Row(
+    //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    //         crossAxisAlignment: CrossAxisAlignment.start,
+    //         children: [
+    //           SizedBox(
+    //             width: _scrWidth * 0.2,
+    //             child: Center(
+    //                 child: Text(_secToMin(_position),
+    //                     style: TextStyle(
+    //                         fontWeight: FontWeight.bold,
+    //                         color: Colors.grey.shade700))),
+    //           ),
+    //           SizedBox(
+    //               width: _scrWidth * 0.2,
+    //               child: Center(
+    //                   child: Text(_secToMin(_duration),
+    //                       style: TextStyle(
+    //                           fontWeight: FontWeight.bold,
+    //                           color: Colors.grey.shade700))))
+    //         ])
+    //   ],
+    // );
+
+    return StreamBuilder<Duration>(
+        stream: Player.getInstance().positionStream,
+        builder: (context, snapshot) {
+          var _scrWidth = MediaQuery.of(context).size.width;
+          var _duration = widget.duration;
+
+          var sourcePosition = snapshot.hasData ? snapshot.data : Duration.zero;
+
+          double sliderValue;
+
+          if (isDragging) {
+            sliderValue = position.inMilliseconds / _duration.inMilliseconds;
+          } else {
+            sliderValue =
+                sourcePosition!.inMilliseconds / _duration.inMilliseconds;
+            position = sourcePosition;
+          }
+
+          if (sliderValue > 1) sliderValue = 1;
+          return Column(
+            children: [
+              Padding(
+                child: Slider(
+                  value: sliderValue,
+                  label: _secToMin(position),
+                  onChanged: (newRating) {
+                    setState(() {
+                      position = Duration(
+                          milliseconds:
+                              (newRating * _duration.inMilliseconds).toInt());
+                    });
+                  },
+                  onChangeStart: (double startValue) {
+                    isDragging = true;
+                    //isDragging = true;
+                  },
+                  onChangeEnd: (newRating) {
+                    isDragging = false;
+
+                    // // player seek
+                    Player.getInstance().seek(Duration(
+                        milliseconds:
+                            (newRating * _duration.inMilliseconds).toInt()));
+                  },
+                ),
+                padding: EdgeInsets.symmetric(horizontal: _scrWidth * 0.04),
+              ),
+
+              // Play time and PlayButton
+              Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(
+                      width: _scrWidth * 0.2,
+                      child: Center(
+                          child: Text(_secToMin(position),
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.grey.shade700))),
+                    ),
+                    SizedBox(
+                        width: _scrWidth * 0.2,
+                        child: Center(
+                            child: Text(_secToMin(_duration),
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.grey.shade700))))
+                  ])
+            ],
+          );
+        });
   }
 }
 
@@ -162,7 +259,7 @@ class _PlayButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
         width: 76,
-        height: 90,
+        height: 76,
         child: StreamBuilder<PlayerState>(
           stream: Player.getInstance().playerStateStream,
           builder: (context, snapshot) {
@@ -205,8 +302,9 @@ class _PlayButton extends StatelessWidget {
   }
 }
 
-String _secToMin(int sec) {
-  var _min = sec ~/ 60;
-  var _sec = sec % 60;
+String _secToMin(Duration duration) {
+  var secs = duration.inSeconds;
+  var _min = secs ~/ 60;
+  var _sec = secs % 60;
   return '${_min < 10 ? '0' + _min.toString() : _min}:${_sec < 10 ? '0' + _sec.toString() : _sec}';
 }
