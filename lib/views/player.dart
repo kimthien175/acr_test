@@ -6,7 +6,6 @@ import '../utils/color.dart';
 
 class PlayerSection extends StatefulWidget {
   const PlayerSection(this.url, {Key? key}) : super(key: key);
-
   final String url;
   @override
   State<PlayerSection> createState() => _PlayerSectionState();
@@ -43,34 +42,44 @@ class _PlayerSectionState extends State<PlayerSection> {
           borderRadius: BorderRadiusDirectional.only(
               topStart: Radius.circular(30), topEnd: Radius.circular(30)),
         ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            const SizedBox(height: 10),
-            Text(
-              'Preview',
-              style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w700,
-                  color: Colors.blue.shade600),
-            ),
+        child: (widget.url != ''
+            ? Column(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  const SizedBox(height: 10),
+                  Text(
+                    'Preview',
+                    style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.blue.shade600),
+                  ),
 
-            // Progress bar and Play time
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                // Container(
-                //     decoration: BoxDecoration(color: Colors.amber),
-                //     height: 64,
-                //     child:
-                _ProgressBar(duration),
-                //   ),
-                const _PlayButton(),
-              ],
-            ),
-            const SizedBox(height: 5)
-          ],
-        ));
+                  // Progress bar and Play time
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      // Container(
+                      //     decoration: BoxDecoration(color: Colors.amber),
+                      //     height: 64,
+                      //     child:
+                      _ProgressBar(duration),
+                      //   ),
+                      const _PlayButton(),
+                    ],
+                  ),
+                  const SizedBox(height: 5)
+                ],
+              )
+            : Center(
+                child: Text(
+                  'No preview',
+                  style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.blue.shade600),
+                ),
+              )));
   }
 }
 

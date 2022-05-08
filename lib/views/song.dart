@@ -1,7 +1,7 @@
 import 'package:acr_test/models/deezer_song.dart';
 import 'package:acr_test/views/player.dart';
 import 'package:flutter/material.dart';
-
+import 'package:auto_size_text/auto_size_text.dart';
 import '../utils/color.dart';
 
 class SongScreen extends StatefulWidget {
@@ -95,11 +95,17 @@ class _SongScreenState extends State<SongScreen> {
                 Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(widget.song.title!,
-                        style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 25,
-                            fontWeight: FontWeight.w600)),
+                    Padding(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: _scrWidth * 0.08),
+                        child: AutoSizeText(
+                          widget.song.title!,
+                          style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 25,
+                              fontWeight: FontWeight.w600),
+                          maxLines: 1,
+                        )),
                     const SizedBox(
                       height: 18,
                     ),
@@ -121,7 +127,7 @@ class _SongScreenState extends State<SongScreen> {
                 ),
 
                 // Play section
-                PlayerSection(widget.song.preview.toString())
+                PlayerSection(widget.song.preview.toString()),
               ],
             ),
           ),

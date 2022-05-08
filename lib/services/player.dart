@@ -178,6 +178,7 @@ class Player {
 
   // return duration to PlayerSection
   Future<Duration> setUrl(String url) async {
+    if (url == '') throw Exception('Player::setUrl : url is empty');
     var duration = await _player.setUrl(url);
     if (duration != null) return duration;
     throw Exception('Result from Player::setUrl is NULL !!');

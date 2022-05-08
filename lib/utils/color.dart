@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 const mainBlue = Color(0xFF0088FF);
+const cardBlue = Color(0xFFE3F2FD);
 
 Widget gradientContainer({Widget? child}) {
   return Container(
