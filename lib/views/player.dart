@@ -36,7 +36,7 @@ class _PlayerSectionState extends State<PlayerSection> {
   @override
   Widget build(BuildContext context) {
     return Container(
-        height: 200,
+        //height: 200,
         decoration: const BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadiusDirectional.only(
@@ -44,7 +44,7 @@ class _PlayerSectionState extends State<PlayerSection> {
         ),
         child: (widget.url != ''
             ? Column(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   const SizedBox(height: 10),
                   Text(
@@ -56,19 +56,32 @@ class _PlayerSectionState extends State<PlayerSection> {
                   ),
 
                   // Progress bar and Play time
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      // Container(
-                      //     decoration: BoxDecoration(color: Colors.amber),
-                      //     height: 64,
-                      //     child:
-                      _ProgressBar(duration),
-                      //   ),
-                      const _PlayButton(),
-                    ],
-                  ),
-                  const SizedBox(height: 5)
+
+                  Stack(children: [
+                    _ProgressBar(duration),
+                    Center(
+                        child: Column(
+                      children: const [
+                        // half of progress indicator bar height
+                        SizedBox(height: 24),
+
+                        SizedBox(height: 115, width: 76, child: _PlayButton())
+                      ],
+                    ))
+                  ]),
+                  // Column(
+                  //   mainAxisAlignment: MainAxisAlignment.center,
+                  //   children: [
+                  //     // Container(
+                  //     //     decoration: BoxDecoration(color: Colors.amber),
+                  //     //     height: 64,
+                  //     //     child:
+                  //     _ProgressBar(duration),
+                  //     //   ),
+                  //     const _PlayButton(),
+                  //   ],
+                  // ),
+                  //const SizedBox(height: 5)
                 ],
               )
             : Center(
@@ -199,7 +212,8 @@ class __ProgressBarState extends State<_ProgressBar> {
           return Column(
             children: [
               // progress Indicator bar
-              Padding(
+              Container(
+                height: 48,
                 padding: EdgeInsets.symmetric(horizontal: _scrWidth * 0.1),
                 child: Stack(alignment: AlignmentDirectional.center, children: [
                   // Buffer
@@ -239,7 +253,7 @@ class __ProgressBarState extends State<_ProgressBar> {
                 ]),
               ),
 
-              // Play time and PlayButton
+              // Play time
               Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -269,43 +283,6 @@ class __ProgressBarState extends State<_ProgressBar> {
 class _PlayButton extends StatelessWidget {
   const _PlayButton({Key? key}) : super(key: key);
 
-  // final Widget playBtn = Row(
-  //     mainAxisAlignment: MainAxisAlignment.center,
-  //     crossAxisAlignment: CrossAxisAlignment.center,
-  //     children: [
-  //       IconButton(
-  //           onPressed: Player.getInstance().play,
-  //           icon: const Icon(Icons.play_circle_filled_rounded,
-  //               color: mainBlue, size: 76)),
-  //       const SizedBox(width: 45)
-  //     ]);
-  // final Widget pauseBtn = Row(
-  //     mainAxisAlignment: MainAxisAlignment.center,
-  //     crossAxisAlignment: CrossAxisAlignment.center,
-  //     children: [
-  //       IconButton(
-  //           onPressed: Player.getInstance().pause,
-  //           icon: const Icon(Icons.pause_circle_filled_rounded,
-  //               color: mainBlue, size: 76)),
-  //       const SizedBox(width: 45)
-  //     ]);
-  // final Widget replayBtn = Row(
-  //     mainAxisAlignment: MainAxisAlignment.center,
-  //     crossAxisAlignment: CrossAxisAlignment.center,
-  //     children: [
-  //       IconButton(
-  //           onPressed: Player.getInstance().replay,
-  //           icon: const Icon(Icons.replay_circle_filled_rounded,
-  //               color: mainBlue, size: 76)),
-  //       const SizedBox(width: 45)
-  //     ]);
-  // final Widget loading = Container(
-  //   margin: const EdgeInsets.all(8.0),
-  //   width: 32.0,
-  //   height: 32.0,
-  //   child: const CircularProgressIndicator(),
-  // );
-
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -316,7 +293,7 @@ class _PlayButton extends StatelessWidget {
           builder: (context, snapshot) {
             var playerState = snapshot.data;
             if (playerState == null) {
-              return const CircularProgressIndicator();
+              return const _LoadingIcon();
             }
 
             if (playerState.processingState == ProcessingState.ready) {
@@ -346,7 +323,7 @@ class _PlayButton extends StatelessWidget {
                       color: mainBlue, size: 76));
             }
 
-            return const CircularProgressIndicator();
+            return const _LoadingIcon();
           },
         ));
     ;
@@ -375,5 +352,17 @@ class _CustomTrackShape extends RoundedRectSliderTrackShape {
         offset.dy + (parentBox.size.height - trackHeight) / 2;
     final double trackWidth = parentBox.size.width;
     return Rect.fromLTWH(trackLeft, trackTop, trackWidth, trackHeight);
+  }
+}
+
+class _LoadingIcon extends StatelessWidget {
+  const _LoadingIcon({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return const SizedBox(
+        height: 76,
+        width: 76,
+        child: Center(child: CircularProgressIndicator()));
   }
 }

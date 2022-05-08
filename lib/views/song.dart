@@ -3,6 +3,7 @@ import 'package:acr_test/views/player.dart';
 import 'package:flutter/material.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import '../utils/color.dart';
+import '../widgets/track_cover.dart';
 
 class SongScreen extends StatefulWidget {
   const SongScreen(this.song, {Key? key}) : super(key: key);
@@ -62,34 +63,7 @@ class _SongScreenState extends State<SongScreen> {
                 const SizedBox(height: 10),
 
                 // Track cover
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(25),
-                  child: (widget.song.album!.coverMedium != null)
-                      ? Image.network(widget.song.album!.coverMedium.toString(),
-                          loadingBuilder: ((context, child, loadingProgress) {
-                          if (loadingProgress == null) return child;
-
-                          return Center(
-                            child: CircularProgressIndicator(
-                              value: loadingProgress.expectedTotalBytes != null
-                                  ? loadingProgress.cumulativeBytesLoaded /
-                                      loadingProgress.expectedTotalBytes!
-                                  : null,
-                            ),
-                          );
-                        }))
-                      : Container(
-                          padding: const EdgeInsets.all(40),
-                          height: 250,
-                          width: 250,
-                          decoration:
-                              const BoxDecoration(color: Color(0xFFFFFFFF)),
-                          child: Image.asset(
-                            'assets/images/shazam-logo.png',
-                            color: mainBlue,
-                          ),
-                        ),
-                ),
+                TrackCover(widget.song.album!.coverMedium, _scrWidth * 2 / 3),
 
                 // Track name, artists and duration
                 Column(

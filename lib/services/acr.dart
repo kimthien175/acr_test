@@ -33,7 +33,6 @@ class Acr {
     if (data != null && data.music!.isNotEmpty) {
       // TODO: MULTIPLE MUSIC SOURCE
       var resultList = await getAllDeezerSong(data.music!);
-      print(resultList);
       if (resultList.isEmpty) {
         Controller.getInstance().reloadHome!(true);
       } else {
