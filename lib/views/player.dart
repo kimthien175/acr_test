@@ -91,9 +91,8 @@ class _BufferBar extends StatelessWidget {
     return StreamBuilder<Duration>(
         stream: Player.getInstance().bufferedPositionStream,
         builder: (context, snapshot) {
-          var _scrWidth = MediaQuery.of(context).size.width;
-          return Padding(
-            padding: EdgeInsets.symmetric(horizontal: _scrWidth * 0.1),
+          return ClipRRect(
+            borderRadius: const BorderRadius.all(Radius.circular(10)),
             child: LinearProgressIndicator(
               color: Theme.of(context).colorScheme.background,
               backgroundColor: Theme.of(context).colorScheme.surface,
@@ -199,38 +198,46 @@ class __ProgressBarState extends State<_ProgressBar> {
           if (sliderValue > 1) sliderValue = 1;
           return Column(
             children: [
-              Stack(alignment: AlignmentDirectional.center, children: [
-                // Buffer
-                _BufferBar(_duration),
+              // progress Indicator bar
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: _scrWidth * 0.1),
+                child: Stack(alignment: AlignmentDirectional.center, children: [
+                  // Buffer
+                  _BufferBar(_duration),
 
-                // Indicator
-                Padding(
-                  child: Slider(
-                    value: sliderValue,
-                    label: _secToMin(position),
-                    onChanged: (newRating) {
-                      setState(() {
-                        position = Duration(
-                            milliseconds:
-                                (newRating * _duration.inMilliseconds).toInt());
-                      });
-                    },
-                    onChangeStart: (double startValue) {
-                      isDragging = true;
-                      //isDragging = true;
-                    },
-                    onChangeEnd: (newRating) {
-                      isDragging = false;
+                  // Indicator
 
-                      // // player seek
-                      Player.getInstance().seek(Duration(
-                          milliseconds:
-                              (newRating * _duration.inMilliseconds).toInt()));
-                    },
-                  ),
-                  padding: EdgeInsets.symmetric(horizontal: _scrWidth * 0.04),
-                ),
-              ]),
+                  SliderTheme(
+                      data: SliderThemeData(
+                        trackShape: _CustomTrackShape(),
+                      ),
+                      child: Slider(
+                        value: sliderValue,
+                        label: _secToMin(position),
+                        onChanged: (newRating) {
+                          setState(() {
+                            position = Duration(
+                                milliseconds:
+                                    (newRating * _duration.inMilliseconds)
+                                        .toInt());
+                          });
+                        },
+                        onChangeStart: (double startValue) {
+                          isDragging = true;
+                          //isDragging = true;
+                        },
+                        onChangeEnd: (newRating) {
+                          isDragging = false;
+
+                          // // player seek
+                          Player.getInstance().seek(Duration(
+                              milliseconds:
+                                  (newRating * _duration.inMilliseconds)
+                                      .toInt()));
+                        },
+                      )),
+                ]),
+              ),
 
               // Play time and PlayButton
               Row(
@@ -351,4 +358,22 @@ String _secToMin(Duration duration) {
   var _min = secs ~/ 60;
   var _sec = secs % 60;
   return '${_min < 10 ? '0' + _min.toString() : _min}:${_sec < 10 ? '0' + _sec.toString() : _sec}';
+}
+
+class _CustomTrackShape extends RoundedRectSliderTrackShape {
+  @override
+  Rect getPreferredRect({
+    required RenderBox parentBox,
+    Offset offset = Offset.zero,
+    required SliderThemeData sliderTheme,
+    bool isEnabled = false,
+    bool isDiscrete = false,
+  }) {
+    final double trackHeight = sliderTheme.trackHeight!;
+    final double trackLeft = offset.dx;
+    final double trackTop =
+        offset.dy + (parentBox.size.height - trackHeight) / 2;
+    final double trackWidth = parentBox.size.width;
+    return Rect.fromLTWH(trackLeft, trackTop, trackWidth, trackHeight);
+  }
 }
