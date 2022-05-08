@@ -27,7 +27,9 @@ void showScrollableBottomSheet(BuildContext context, List<Widget> children) {
                   color: Colors.grey.shade600,
                   borderRadius: const BorderRadius.all(Radius.circular(10))),
             )),
-            Flexible(child: ListView(shrinkWrap: true, children: children))
+
+            Flexible(child: ListView(shrinkWrap: true, children: children)),
+            const SizedBox(height: 15)
           ],
         ))),
   );
