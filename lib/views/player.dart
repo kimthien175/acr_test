@@ -19,24 +19,23 @@ class _PlayerSectionState extends State<PlayerSection> {
   void initState() {
     super.initState();
 
-    // Player.getInstance().notify = (ButtonState _btnState) => setState(() {
-    //       btnState = _btnState;
-    //     });
-
     // set url
-    Player.getInstance().setUrl(widget.url).then((value) {
-      setState(() {
-        duration = value;
+    if (widget.url != '') {
+      Player.getInstance().setUrl(widget.url).then((value) {
+        setState(() {
+          duration = value;
+        });
+      }).catchError((e) {
+        print('E: setUrl ' + e.toString());
       });
-    }).catchError((e) {
-      print('E: setUrl ' + e.toString());
-    });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
         //height: 200,
+        width: MediaQuery.of(context).size.width,
         decoration: const BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadiusDirectional.only(
@@ -69,29 +68,21 @@ class _PlayerSectionState extends State<PlayerSection> {
                       ],
                     ))
                   ]),
-                  // Column(
-                  //   mainAxisAlignment: MainAxisAlignment.center,
-                  //   children: [
-                  //     // Container(
-                  //     //     decoration: BoxDecoration(color: Colors.amber),
-                  //     //     height: 64,
-                  //     //     child:
-                  //     _ProgressBar(duration),
-                  //     //   ),
-                  //     const _PlayButton(),
-                  //   ],
-                  // ),
-                  //const SizedBox(height: 5)
                 ],
               )
-            : Center(
-                child: Text(
-                  'No preview',
-                  style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.blue.shade600),
-                ),
+            : Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 10),
+                  Text(
+                    'No preview',
+                    style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.blue.shade600),
+                  ),
+                  const SizedBox(height: 10),
+                ],
               )));
   }
 }

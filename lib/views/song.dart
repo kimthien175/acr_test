@@ -18,7 +18,6 @@ class _SongScreenState extends State<SongScreen> {
   @override
   void initState() {
     super.initState();
-    //Player.getInstance().setUrl(widget.song.preview.toString());
   }
 
   String _contributers = '_contributer';
